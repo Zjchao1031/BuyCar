@@ -1,6 +1,6 @@
 mysql:
   addr: "127.0.0.1::3306"
-  database: "LearnShare"
+  database: "carbuyer_assistance"
   username: "root"
   password: "LearnShare"
   charset: "utf8mb4"
