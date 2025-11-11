@@ -9,12 +9,11 @@ server:
   addr: "0.0.0.0"
   port: 8888
 
-# LLM 配置示例（使用通义千问 Plus）
 llm:
   provider: "tongyi"
   enabled: true
   tongyi:
-    api_key: "sk-19c4ce72bd3b4e9bbc01ce23fd195a96" # 请替换为你的真实密钥
+    api_key: "sk-19c4ce72bd3b4e9bbc01ce23fd195a96" 
     model: "qwen-plus"
     endpoint: "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
     timeout_seconds: 20
