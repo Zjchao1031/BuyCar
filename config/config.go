@@ -7,14 +7,15 @@ import (
 )
 
 var (
-	Mysql        *mySQL
-	Redis        *redis
-	Oss          *oss
-	Smtp         *smtp
-	Verify       *verify
-	Server       *server
-	Turnstile    *turnstile
-	runtimeViper = viper.New()
+    Mysql        *mySQL
+    Redis        *redis
+    Oss          *oss
+    Smtp         *smtp
+    Verify       *verify
+    Server       *server
+    Turnstile    *turnstile
+    LLM          *llm
+    runtimeViper = viper.New()
 )
 
 // Init 目的是初始化并读入配置
@@ -50,7 +51,8 @@ func configMapping() {
 	Redis = &c.Redis
 	Oss = &c.OSS
 	Smtp = &c.Smtp
-	Verify = &c.Verify
-	Server = &c.Server
-	Turnstile = &c.Turnstile
+    Verify = &c.Verify
+    Server = &c.Server
+    Turnstile = &c.Turnstile
+    LLM = &c.LLM
 }

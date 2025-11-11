@@ -1,8 +1,9 @@
 package db
 
 import (
-	"buycar/biz/model/module"
-	"time"
+    "buycar/biz/model/module"
+    "fmt"
+    "time"
 )
 
 type User struct {
@@ -35,11 +36,55 @@ type Feedback struct {
 }
 
 func (f Feedback) ToModuleStruct() *module.Feedback {
-	return &module.Feedback{
-		ID:        f.Id,
-		UserID:    f.UserId,
-		ConsultID: f.ConsultId,
-		Content:   f.Content,
-		CreatedAt: f.CreatedAt.String(),
-	}
+    return &module.Feedback{
+        ID:        f.Id,
+        UserID:    f.UserId,
+        ConsultID: f.ConsultId,
+        Content:   f.Content,
+        CreatedAt: f.CreatedAt.String(),
+    }
+}
+
+// Consult 表模型，映射 consults 表
+type Consult struct {
+    ConsultId       int64
+    UserId          *int64
+    Title           *string
+    BudgetRange     *string
+    PreferredType   *string
+    UseCase         *string
+    FuelType        *string
+    BrandPreference *string
+    LlmModel        *string
+    LlmPrompt       *string
+    LlmResponse     *string
+    Recommendations *string
+    Status          string
+    CreatedAt       time.Time
+    UpdatedAt       time.Time
+}
+
+func (c Consult) ToModuleStruct() *module.Consult {
+    var userID *string
+    if c.UserId != nil {
+        uidStr := fmt.Sprintf("%d", *c.UserId)
+        userID = &uidStr
+    }
+
+    return &module.Consult{
+        ConsultID:       fmt.Sprintf("%d", c.ConsultId),
+        UserID:          userID,
+        // Title 字段目前不在 module.Consult 中暴露
+        BudgetRange:     c.BudgetRange,
+        PreferredType:   c.PreferredType,
+        UseCase:         c.UseCase,
+        FuelType:        c.FuelType,
+        BrandPreference: c.BrandPreference,
+        LlmModel:        c.LlmModel,
+        LlmPrompt:       c.LlmPrompt,
+        LlmResponse:     c.LlmResponse,
+        Recommendations: c.Recommendations,
+        CreatedAt:       c.CreatedAt.Unix(),
+        UpdatedAt:       c.UpdatedAt.Unix(),
+    }
 }
