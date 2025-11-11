@@ -9,11 +9,8 @@ server:
   addr: "0.0.0.0"
   port: 8888
 
-llm:
-  provider: "tongyi"
-  enabled: true
-  tongyi:
-    api_key: "sk-19c4ce72bd3b4e9bbc01ce23fd195a96" 
-    model: "qwen-plus"
-    endpoint: "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
-    timeout_seconds: 20
+# OpenAI 兼容端点示例（将 url 替换为你的兼容 API 地址）
+aiendpoint:
+  url: "https://api.openai.com/v1/chat/completions"
+  apiKey: "YOUR_API_KEY"
+  model: "gpt-4o-mini"

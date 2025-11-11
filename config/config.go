@@ -10,7 +10,6 @@ var (
     Mysql        *mySQL
     Server       *server
     AiEndpoint   *aiEndpoint
-    LLM          *llm
     runtimeViper = viper.New()
 )
 
@@ -38,14 +37,13 @@ func Init() {
 
 // configMapping 用于将配置映射到全局变量
 func configMapping() {
-	c := new(config)
-	if err := runtimeViper.Unmarshal(&c); err != nil {
-		// 由于这个函数会在配置重载时被再次触发，所以需要判断日志记录方式
-		logger.Fatalf("config.configMapping: 配置反序列化失败: %v", err)
-	}
+    c := new(config)
+    if err := runtimeViper.Unmarshal(&c); err != nil {
+        // 由于这个函数会在配置重载时被再次触发，所以需要判断日志记录方式
+        logger.Fatalf("config.configMapping: 配置反序列化失败: %v", err)
+    }
     Mysql = &c.MySQL
     Server = &c.Server
     AiEndpoint = &c.AiEndpoint
-    LLM = &c.LLM
 
 }

@@ -4,7 +4,7 @@ import (
     "buycar/biz/dal/db"
     "buycar/biz/model/module"
     purchase "buycar/biz/model/purchase"
-    "buycar/pkg/llm"
+    "buycar/pkg/AIAgent"
     "buycar/pkg/constants"
     "buycar/pkg/errno"
     "context"
@@ -80,33 +80,30 @@ func (s *ConsultService) generateAndUpdate(consult db.Consult) {
 
     prompt := buildPrompt(&consult)
 
-    // 创建 LLM 客户端
-    client, err := llm.NewClientFromConfig()
-    if err != nil {
-        msg := "LLM 初始化失败: " + err.Error()
-        _ = db.UpdateConsultLLMFields(context.Background(), consult.ConsultId, nil, &prompt, &msg, nil)
-        _ = db.UpdateConsultStatus(context.Background(), consult.ConsultId, "failed")
-        return
-    }
-
     // 使用独立的超时上下文，避免受请求生命周期影响
     ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
     defer cancel()
 
-    content, raw, modelUsed, err := client.Generate(ctx, prompt)
+    // 仅使用 OpenAI 兼容接口：构造消息并调用
+    model := "gpt-4o-mini" // 可根据配置或需求调整
+    messages := []AIAgent.Message{
+        {Role: "system", Content: "你是一位资深汽车顾问，提供简洁、准确的车型推荐。"},
+        {Role: "user", Content: prompt},
+    }
+    content, err := AIAgent.CallOpenAICompat(ctx, model, messages)
     if err != nil {
         msg := "LLM 生成失败: " + err.Error()
-        _ = db.UpdateConsultLLMFields(context.Background(), consult.ConsultId, &modelUsed, &prompt, &msg, nil)
+        _ = db.UpdateConsultLLMFields(context.Background(), consult.ConsultId, &model, &prompt, &msg, nil)
         _ = db.UpdateConsultStatus(context.Background(), consult.ConsultId, "failed")
         return
     }
 
-    // 写入生成结果
-    _ = db.UpdateConsultLLMFields(context.Background(), consult.ConsultId, &modelUsed, &prompt, &raw, &content)
+    // 写入生成结果（将 content 作为推荐文本保存；llm_response 记录同样内容便于查询）
+    _ = db.UpdateConsultLLMFields(context.Background(), consult.ConsultId, &model, &prompt, &content, &content)
     _ = db.UpdateConsultStatus(context.Background(), consult.ConsultId, "completed")
 }
 
-// buildPrompt 构造通义千问的推荐提示词
+// buildPrompt 构造推荐提示词
 func buildPrompt(c *db.Consult) string {
     // 将用户偏好组装为简洁的中文提示，要求输出简明推荐列表
     // 注意：为了最大兼容性，我们要求返回纯文本，服务端直接存储于 recommendations
